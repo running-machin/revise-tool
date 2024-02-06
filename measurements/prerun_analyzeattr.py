@@ -2,7 +2,7 @@ import os
 assert 'measurement' not in os.getcwd() and 'analysis_notebooks' not in os.getcwd(), "Script must be run from home directory"
 import sys
 sys.path.append('.')
-import datasets
+import revise_datasets as datasets
 import torchvision.transforms as transforms
 import pycountry
 from scipy import stats
@@ -27,7 +27,7 @@ def main(dataset, folder_name):
     COLORS = sns.color_palette('Set2', 2)
 
     if not os.path.exists("checkpoints/{}".format(folder_name)):
-        os.mkdirs("checkpoints/{}".format(folder_name), exist_ok=True)
+        os.makedirs("checkpoints/{}".format(folder_name), exist_ok=True)
 
     # Projecting a set of features into a lower-dimensional subspace with PCA
     def project(features, dim):
@@ -81,7 +81,7 @@ def main(dataset, folder_name):
     scenes = stats_dict['scene']
     scene_filepaths = stats_dict['scene_filepaths']
 
-    file_name = 'util_files/categories_places365.txt'
+    file_name = 'categories_places365.txt'
     if not os.access(file_name, os.W_OK):
         synset_url = 'https://raw.githubusercontent.com/csailvision/places365/master/categories_places365.txt'
         os.system('wget ' + synset_url)
