@@ -239,7 +239,7 @@ if __name__ == "__main__":
         print("usage: tester_script.py [DatasetName]")
         sys.exit()
 
-    filename = 'datasets'          
+    filename = 'revise_datasets'          
     module = sys.argv[1]
 
     try: 
