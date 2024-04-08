@@ -1,0 +1,22 @@
+
+countryinfo
+geonamescache
+gdown
+fasttext @ git+https://github.com/cfculhane/fastText
+imageio
+lxml
+opencv-python
+pybind11
+pycountry
+pycocotools
+pycountry
+pycountry
+plotly
+scikit-learn
+seaborn
+shapely
+spacy
+spacy
+tqdm
+torch
+torchvision

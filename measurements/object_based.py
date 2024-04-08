@@ -3,7 +3,7 @@ assert 'measurement' not in os.getcwd() and 'analysis_notebooks' not in os.getcw
 import argparse
 import sys
 sys.path.append('.')
-from datasets import *
+from revise_datasets import *
 import pickle
 import torchvision.transforms as transforms
 from torch.autograd import Variable

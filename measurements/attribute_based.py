@@ -3,7 +3,7 @@ assert 'measurement' not in os.getcwd() and 'analysis_notebooks' not in os.getcw
 import argparse
 import sys
 sys.path.append('.')
-from datasets import *
+from revise_datasets import *
 import pickle
 import torchvision.transforms as transforms
 from torchvision import models
@@ -12,9 +12,9 @@ import torch.nn.functional as F
 import numpy as np
 import torch.nn as nn
 import cv2
-import boto3
+# import boto3
 import imageio
-import botocore
+# import botocore
 from PIL import Image
 from util_files.cifar_models import resnet110
 from tqdm import tqdm

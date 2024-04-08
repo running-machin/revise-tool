@@ -35,6 +35,9 @@ class NoneDict(dict):
         return dict.get(self, key)
 
 def setup_scenemapping(dataset, name):
+    # create dataloader_files folder is doesnt exist
+    if not os.path.exists('dataloader_files'):
+        os.makedirs('dataloader_files')
     info = pickle.load(open('util_files/places_scene_info.pkl', 'rb'))
     idx_to_scene = info['idx_to_scene']
     idx_to_scenegroup = info['idx_to_scenegroup']
@@ -76,10 +79,9 @@ def setup_scenemapping(dataset, name):
         top_scene = sceneidx_to_scenegroupidx[int(idx[0].data.cpu().numpy())]
         scene_mapping[filepath] = top_scene
         if i % 100000 == 0:
-            pickle.dump(scene_mapping, open('dataloader_files/{0}_scene_mapping_{1}.pkl'.format(name, i), 'wb'))
-
+            pickle.dump(scene_mapping, open(os.path.join('dataloader_files','{0}_scene_mapping_{1}.pkl'.format(name, i)), 'wb'))
     dataset.scene_mapping = scene_mapping
-    pickle.dump(scene_mapping, open('dataloader_files/{}_scene_mapping.pkl'.format(name), 'wb'))
+    pickle.dump(scene_mapping, open(os.path.join('dataloader_files','{}_scene_mapping.pkl'.format(name)), 'wb'))
 
 def read_xml_content(xml_file):
     parser = etree.XMLParser(recover=True)
