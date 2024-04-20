@@ -5,3 +5,5 @@ results/
 .env
 dataloader_files/
 checkpoints
+.venv/
+.vscode/

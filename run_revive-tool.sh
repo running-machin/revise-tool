@@ -1,8 +1,9 @@
 # source /workspace/persistent/biasenv/bin/activate
 set -e
+set -e
 # step 1:colne the repo
 # git clone https://github.com/princetonvisualai/revise-tool
-git clone https://github.com/running-machin/revise-tool.git
+# git clone https://github.com/running-machin/revise-tool.git
 apt-get update
 apt install python3.8-venv -y
 # if the there is no conda just install miniconda or something if not try to install the dependencies manually 
@@ -91,6 +92,9 @@ unzip Data/Coco/val2017.zip -d Data/Coco/2014data/
 rm -rf Data/Coco/train2014.zip
 rm -rf Data/Coco/annotations_trainval2014.zip
 rm -rf Data/Coco/val2017.zip
+rm -rf Data/Coco/train2014.zip
+rm -rf Data/Coco/annotations_trainval2014.zip
+rm -rf Data/Coco/val2017.zip
 
 # wget https://raw.githubusercontent.com/uclanlp/reducingbias/master/data/COCO/train.data -O Data/Coco/2014data/bias_splits/train.data
 # wget https://raw.githubusercontent.com/uclanlp/reducingbias/master/data/COCO/test.data -O Data/Coco/2014data/bias_splits/test.data
@@ -105,9 +109,11 @@ rm -rf Data/Coco/val2017.zip
 
 # now to check the dataloader
 python tester_script.py CoCoDataset
+python tester_script.py CoCoDataset
 
 # measure the data (done until here couldnt follow up later due to GPU issue)
 python main_measure.py --measurements 'att_siz' 'att_cnt' 'att_dis' 'att_clu' 'obj_scn' 'att_scn' --dataset 'coco' --folder 'coco_dataset'
+python main_measure.py --measurements 'att_siz' 'att_cnt' 'att_dis' 'att_clu' 'obj_scn' 'att_scn' --dataset 'vidsum' --folder 'videsum'
 # i am using analysis notebook to see what happens
 # datasets.py importing gets issue with datasets package so rename the py file to revive_datasets
 # AttributeError: module 'os' has no attribute 'mkdirs' use os.makedirs

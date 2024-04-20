@@ -24,6 +24,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 def main(dataset, folder_name):
+    print('working on', folder_name)
     COLORS = sns.color_palette('Set2', 2)
 
     if not os.path.exists("checkpoints/{}".format(folder_name)):
@@ -73,15 +74,16 @@ def main(dataset, folder_name):
     warnings.filterwarnings("ignore")
 
     if not os.path.exists("results/{0}/att_clu/".format(folder_name)):
-        os.mkdir("results/{0}/att_clu/".format(folder_name))
+        os.makedirs("results/{0}/att_clu/".format(folder_name))
     categories = dataset.categories
     names = dataset.labels_to_names
-    stats_dict = pickle.load(open("results/{}/att_clu.pkl".format(folder_name), "rb"))
+    print(folder_name)
+    stats_dict = pickle.load(open("results/{0}/att_clu.pkl".format(folder_name), "rb"))
     instances = stats_dict['instance']
     scenes = stats_dict['scene']
     scene_filepaths = stats_dict['scene_filepaths']
 
-    file_name = 'categories_places365.txt'
+    file_name = 'util_files/categories_places365.txt'
     if not os.access(file_name, os.W_OK):
         synset_url = 'https://raw.githubusercontent.com/csailvision/places365/master/categories_places365.txt'
         os.system('wget ' + synset_url)
@@ -200,7 +202,7 @@ if __name__ == '__main__':
 
     if not os.path.exists("results/{}/att_clu.pkl".format(args.folder)):
         print("att_clu Metric was not run for this dataset.")
-        exit()
+        # exit()
 
     if args.dataset == 'openimages':
         dataset = datasets.OpenImagesDataset(transform_train)

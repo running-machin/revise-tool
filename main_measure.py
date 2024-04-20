@@ -1,5 +1,7 @@
 import argparse
 from revise_datasets import *
+import revise_datasets as datasets
+from revise_datasets import *
 import pickle
 import torchvision.transforms as transforms
 import torch.utils.data as data
@@ -67,6 +69,8 @@ def main():
         dataset = CityScapesDataset(transform_train)
     elif args.dataset == 'bdd100k':
         dataset = BDD100KDataset(transform_train)
+    elif args.dataset == 'vidsum':
+        dataset = VidSum(transform_train)
         
     for meas in args.measurements:
         print("Starting measurement {}".format(meas))

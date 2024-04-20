@@ -204,6 +204,103 @@ def group_mapping_creator(labels_to_names, supercategories_to_names=DEFAULT_GROU
 
     # return function of mapping from label-> supercat
     return lambda label: result_label_to_group_map.get(label)
+class VidSum(data.Dataset):
+    
+    def __init__(self, transform):
+        self.transform = transform
+
+        # default to DEFAULT_GROUPINGS_TO_NAMES
+        self.supercategories_to_names = DEFAULT_GROUPINGS_TO_NAMES
+        self.img_folder = '..\\video_summarizer\\downloaded_videos\\Nightly_News_Full_Broadcast_-_April_15\\frames'
+        self.coco = COCO('..\\video_summarizer\\downloaded_videos\\Nightly_News_Full_Broadcast_-_April_15\\labels\\coco128.json')
+        gender_data = pickle.load(open('..\\video_summarizer\\downloaded_videos\\Nightly_News_Full_Broadcast_-_April_15\\labels\\gender.data', 'rb'))
+        self.attribute_data = {}
+        for i in range(len(gender_data)):
+            if list(gender_data[i].values())[0][1]==0:
+                attribute = 1
+            elif list(gender_data[i].values())[0][0]==0:
+                attribute = 0
+            else:
+                attribute = None
+            self.attribute_data[list(gender_data[i].keys())[0]] = attribute
+        # drop the pair if the attribute is None
+        self.attribute_data = {k:v for k,v in self.attribute_data.items() if v is not None}
+
+        # List of all of the image ids
+        # Note: This is some representation of the image, can be integer or name of image
+        ids = list(self.coco.anns.keys())
+        self.image_ids = list(set([self.coco.anns[this_id]['image_id'] for this_id in ids]))
+
+        # Maps label to the human-readable name
+        cats = self.coco.loadCats(self.coco.getCatIds())
+        self.labels_to_names = {}
+        for cat in cats:
+            self.labels_to_names[cat['id']] = cat['name']
+        # List of all the labels
+        self.categories = list(self.labels_to_names.keys())
+
+        # Names of attribute values to analyze
+        self.attribute_names = ["Female", "Male"]
+
+        # Maps from filepath to scenes
+        # Can be set up by running AlexNet Places365 model by running the following command:
+        # self.scene_mapping = setup_scenemapping(self, '[name of dataset]')
+        self.scene_mapping = NoneDict()
+        
+        
+
+        #Note: Any of the 'optional' attributes may be necessary depending on analysis and metrics, check before not filling in
+
+
+        # Maps each label to number of supercategory group, (optional)
+        self.group_mapping = group_mapping_creator(self.labels_to_names, self.supercategories_to_names)
+
+        # Labels, that are entries from self.categories, that correspond to people (optional)
+        self.people_labels = [1]
+
+        # Number of images from dataset that contain images with each attribute (optional, doesn't need to exist)
+        self.num_attribute_images = [0, 0]
+        
+    def __getitem__(self, index):
+        image_id = self.image_ids[index]
+        path = self.coco.loadImgs(image_id)[0]["file_name"]
+        file_path = os.path.join(self.img_folder, path)
+        return self.from_path(file_path)
+
+    def __len__(self):
+        return len(self.image_ids)
+
+    def from_path(self, file_path):
+        image_id = int(os.path.basename(file_path)[-16:-4])
+
+        image = Image.open(file_path).convert("RGB")
+        image_size = [image.size[1], image.size[0]]
+        image = self.transform(image)
+
+        annIds = self.coco.getAnnIds(imgIds=image_id)
+        coco_anns = self.coco.loadAnns(annIds) # coco is [x, y, width, height]
+        formatted_anns = []
+        biggest_person = 0
+        biggest_bbox = 0
+        for ann in coco_anns:
+            bbox = ann['bbox']
+            bbox = [bbox[0] / image_size[1], (bbox[0]+bbox[2]) / image_size[1], bbox[1] / image_size[0], (bbox[1]+bbox[3]) / image_size[0]]
+            new_ann = {'bbox': bbox, 'label': ann['category_id']}
+            formatted_anns.append(new_ann)
+
+            if ann['category_id'] == 1:
+                area = (bbox[1]-bbox[0])*(bbox[3]-bbox[2])
+                if area > biggest_person:
+                    biggest_person = area
+                    biggest_bbox = bbox
+
+        scene = self.scene_mapping.get(file_path, None)
+        if image_id in self.attribute_data.keys():
+            anns = [formatted_anns, [[self.attribute_data[image_id]], [biggest_bbox]], [0], file_path, scene]
+        else:
+            anns = [formatted_anns, [], [0], file_path, scene]
+
+        return image, anns
 
 class TemplateDataset(data.Dataset):
     

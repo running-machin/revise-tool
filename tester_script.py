@@ -143,6 +143,7 @@ def validate_dataset(dataset):
     if len(labels) > 1: 
         if not isinstance(labels[0], dict) or labels[0].get('label', None)==None: 
             print('ERROR: image_anns must be a list of dicts. If there are >0 dicts, must contain keyword \'label\' \n')
+    wrong_bbox=None
     for label in labels: 
         wrong_bbox=None
         if label.get('bbox', None): 
